@@ -11,6 +11,10 @@ module IceCube
       reset
     end
 
+    def start_of_period(time)
+      Time.new(time.year, time.month, time.day, 0, time.min, time.sec, time.utc_offset)
+    end
+
   end
 
 end

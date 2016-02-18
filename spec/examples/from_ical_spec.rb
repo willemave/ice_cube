@@ -86,6 +86,57 @@ module IceCube
       rule.should == IceCube::Rule.weekly(2, :monday)
     end
 
+    describe 'BYSETPOS' do
+      [
+        {
+          # one position in a month
+          dtstart: Time.new(2016, 2, 1),
+          rrule: 'FREQ=MONTHLY;BYDAY=WE;BYSETPOS=1',
+          between: (Time.new(2016, 2, 1)..Time.new(2016, 3, 1)),
+          expected_occurrences: [
+            Time.new(2016, 2, 3)
+          ]
+        },
+        {
+          # multiple positions in a month
+          dtstart: Time.new(2016, 2, 1),
+          rrule: 'FREQ=MONTHLY;BYDAY=WE;BYSETPOS=1,3',
+          between: (Time.new(2016, 2, 1)..Time.new(2016, 3, 1)),
+          expected_occurrences: [
+            Time.new(2016, 2, 3),
+            Time.new(2016, 2, 17)
+          ]
+        },
+        {
+          # multiple positions in a month starting after the last one
+          dtstart: Time.new(2016, 2, 1),
+          rrule: 'FREQ=MONTHLY;BYDAY=WE;BYSETPOS=1,3',
+          between: (Time.new(2016, 2, 18)..Time.new(2016, 3, 1)),
+          expected_occurrences: []
+        },
+        {
+          # one position in a week
+          dtstart: Time.new(2016, 2, 1),
+          rrule: 'FREQ=WEEKLY;BYHOUR=12;BYSETPOS=1',
+          between: (Time.new(2016, 2, 1)..Time.new(2016, 3, 1)),
+          expected_occurrences: [
+            Time.new(2016, 2, 1, 12),
+            Time.new(2016, 2, 8, 12),
+            Time.new(2016, 2, 15, 12),
+            Time.new(2016, 2, 22, 12),
+            Time.new(2016, 2, 29, 12)
+          ]
+        }
+      ].each do |test|
+        it "generates correct occurrences for #{test[:rrule]}" do
+          schedule = IceCube::Schedule.new(test[:dtstart])
+          schedule.add_recurrence_rule(IceCube::Rule.from_ical(test[:rrule]))
+          actual_occurrences = schedule.occurrences_between(test[:between].min, test[:between].max)
+          actual_occurrences.should == test[:expected_occurrences]
+        end
+      end
+    end
+
     it 'should return no occurrences after daily interval with count is over' do
       schedule = IceCube::Schedule.new(Time.now)
       schedule.add_recurrence_rule(IceCube::Rule.from_ical("FREQ=DAILY;COUNT=5"))
