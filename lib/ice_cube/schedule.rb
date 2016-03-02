@@ -411,25 +411,18 @@ module IceCube
       opening_time = start_time if opening_time < start_time
       Enumerator.new do |yielder|
         reset
-        if full_interval_required?
-          t1 = start_of_interval
-        elsif full_required?
-          t1 = start_time
-        else
-          t1 = realign(opening_time)
-        end
-
+        t1 = full_required? ? start_time : realign(opening_time)
         loop do
           break unless (t0 = next_time(t1, closing_time))
           break if closing_time && t0 > closing_time
-          yielder << (block_given? ? block.call(t0) : t0) if t0 >= opening_time && t0 >= start_time
+          yielder << (block_given? ? block.call(t0) : t0) if t0 >= opening_time
           break unless (t1 = next_time(t0 + 1, closing_time))
           break if closing_time && t1 > closing_time
           if TimeUtil.same_clock?(t0, t1) && recurrence_rules.any?(&:dst_adjust?)
             wind_back_dst
             next (t1 += 1)
           end
-          yielder << (block_given? ? block.call(t1) : t1) if t1 >= opening_time && t1 >= start_time
+          yielder << (block_given? ? block.call(t1) : t1) if t1 >= opening_time
           next (t1 += 1)
         end
       end
@@ -457,17 +450,6 @@ module IceCube
     def full_required?
       @all_recurrence_rules.any?(&:full_required?) ||
       @all_exception_rules.any?(&:full_required?)
-    end
-
-    # Indicate if any rule needs to be run from the start of the frequency interval
-    # If we have rules with positions, we need to walk from the beginning of the largest interval
-    def full_interval_required?
-      @all_recurrence_rules.any? { |rule| rule.is_a?(ValidatedRule) && !rule.positions.empty? } ||
-        @all_exception_rules.any? { |rule| rule.is_a?(ValidatedRule) && !rule.positions.empty? }
-    end
-
-    def start_of_interval
-      @all_recurrence_rules.map { |rule| rule.start_of_period(start_time) }.min
     end
 
     # Return a boolean indicating whether or not a specific time
