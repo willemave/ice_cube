@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.14.0 / 2016-02-23
+
+* Added span option for occurrence methods
+
+## 0.13.1 / 2015-12-07
+
+* Added i18n support!
+
+## 0.13.0 / 2015-05-26
+
+* [FEATURE] from_ical!
+
 ## 0.12.1 / 2014-07-04
 
 * [FEATURE]    Deprecation message improvements
