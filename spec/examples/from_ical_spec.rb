@@ -86,6 +86,17 @@ module IceCube
       rule.should == IceCube::Rule.weekly(2, :monday)
     end
 
+    describe 'BYSETPOS' do
+      YAML.load_file(File.dirname(__FILE__) + '/../data/rrule_test_data.yml').each do |test|
+        it "generates correct occurrences for #{test['rrule']}" do
+          schedule = IceCube::Schedule.new(test['dtstart'])
+          schedule.add_recurrence_rule(IceCube::Rule.from_ical(test['rrule']))
+          actual_occurrences = schedule.occurrences_between(test['between']['start'], test['between']['end'])
+          actual_occurrences.should == test['expected']
+        end
+      end
+    end
+
     it 'should return no occurrences after daily interval with count is over' do
       schedule = IceCube::Schedule.new(Time.now)
       schedule.add_recurrence_rule(IceCube::Rule.from_ical("FREQ=DAILY;COUNT=5"))

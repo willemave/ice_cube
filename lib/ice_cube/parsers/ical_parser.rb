@@ -68,8 +68,9 @@ module IceCube
         when 'BYYEARDAY'
           params[:validations][:day_of_year] = value.split(',').collect(&:to_i)
         when 'BYSETPOS'
+          params[:validations][:by_set_position] = value.split(',').collect(&:to_i)
         else
-          raise "Invalid or unsupported rrule command: #{name}"
+          raise "Invalid or unsupported rrule command : #{name}"
         end
       end
 
