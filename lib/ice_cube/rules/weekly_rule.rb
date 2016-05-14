@@ -18,7 +18,7 @@ module IceCube
       until time.send("#{week_start}?")
         time -= ONE_DAY
       end
-      Time.new(time.year, time.month, time.day, time.hour, time.min, time.sec, time.utc_offset)
+      Time.new(time.year, time.month, time.day, 0, 0, 0, time.utc_offset)
     end
 
   end
