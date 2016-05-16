@@ -12,7 +12,7 @@ module IceCube
     end
 
     def start_of_period(time)
-      Time.new(time.year, time.month, time.day, time.hour, 0, time.sec, time.utc_offset)
+      Time.new(time.year, time.month, time.day, time.hour, 0, 0, time.utc_offset)
     end
 
   end
