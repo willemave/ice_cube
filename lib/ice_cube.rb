@@ -43,7 +43,6 @@ module IceCube
 
     autoload :Count, 'ice_cube/validations/count'
     autoload :Until, 'ice_cube/validations/until'
-    autoload :BySetPosition, 'ice_cube/validations/by_set_position'
 
     autoload :SecondlyInterval, 'ice_cube/validations/secondly_interval'
     autoload :MinutelyInterval, 'ice_cube/validations/minutely_interval'

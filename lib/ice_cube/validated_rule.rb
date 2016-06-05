@@ -13,8 +13,6 @@ module IceCube
     include Validations::MonthOfYear
     include Validations::DayOfYear
 
-    include Validations::BySetPosition
-
     include Validations::Count
     include Validations::Until
 
@@ -32,11 +30,10 @@ module IceCube
       :interval
     ]
 
-    attr_reader :validations, :positions
+    attr_reader :validations
 
     def initialize(interval = 1, *)
       @validations = Hash.new
-      @positions = []
     end
 
     def base_interval_validation
@@ -57,23 +54,9 @@ module IceCube
       @time = time
       @schedule = schedule
 
-      if !@positions.empty?
-        @time = start_of_period(@time)
-        unfiltered_occurrences = []
-        while (find_acceptable_time_before(closing_time))
-          unfiltered_occurrences << @time
-          @time += 1
-        end
-        grouped_by_frequency_interval = unfiltered_occurrences.group_by { |p| start_of_period(p) }
-        filtered_by_position = grouped_by_frequency_interval.map do |_, occurrences_within_interval|
-          occurrences_within_interval.select.with_index {|_, i| @positions.include?(i + 1)  } # bysetpos is 1-indexed
-        end
-        @time = filtered_by_position.flatten.find { |occurrence_time| occurrence_time >= time}
-      else
-        return nil unless find_acceptable_time_before(closing_time)
-      end
+      return nil unless find_acceptable_time_before(closing_time)
 
-      @uses += 1 if @time && @time >= schedule.start_time
+      @uses += 1 if @time
       @time
     end
 
